@@ -1,0 +1,20 @@
+---
+title: "transmisibilidad-estimar"
+format: html
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Estimar transmisibilidad
+
+Adaptado del tutorial <https://epiverse-trace.github.io/tutorials-middle/quantify-transmissibility.html> con traducción al Español en <https://epiverse-trace.github.io/tutorials-middle-es/quantify-transmissibility.html> (pero con código no actualizado aún)
+
+## Usar tiempos epidemiologicos en analisis
+
+Adaptado del tutorial <https://epiverse-trace.github.io/tutorials-middle/delays-functions.html> con traducción al Español en <https://epiverse-trace.github.io/tutorials-middle-es/delays-functions.html> (pero con código no actualizado aún)
+
