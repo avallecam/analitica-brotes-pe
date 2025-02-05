@@ -3,11 +3,14 @@ project:
 
 website:
   title: "analitica-brotes-pe"
-  navbar:
-    left:
-      - href: index.qmd
-        text: Home
-      - about.qmd
+  sidebar:
+    style: "docked"
+    search: true
+    contents:
+      - section: "Semana 1"
+        contents:
+          - transmisibilidad-input.qmd
+          - transmisibilidad-estimar.qmd
 
 format:
   html:
