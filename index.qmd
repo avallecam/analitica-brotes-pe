@@ -2,10 +2,27 @@
 title: "analitica-brotes-pe"
 ---
 
-This is a Quarto website.
+Material de guía para el Curso Virtual en [Analítica de Brotes y Modelamiento Matemático](https://e.cayetano.edu.pe/programas/modelamiento-matematico-en-salud-publica/).
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+## Configuracion de software
 
-```{r}
-1 + 1
+Primero, seguir pasos en: <https://epiverse-trace.github.io/epitkit/#configuraci%C3%B3n-del-software>
+
+Segundo, instalar estos paquetes:
+
+```{r,eval=FALSE}
+# para episodios sobre acceso a retrasos temporales y cuantificar la transmisión
+
+if(!require("pak")) install.packages("pak")
+
+new_packages <- c(
+  "simulist",
+  "incidence2",  
+  "epiparameter",
+  "EpiNow2",
+  "tidyverse"
+)
+
+pak::pkg_install(new_packages)
 ```
+
