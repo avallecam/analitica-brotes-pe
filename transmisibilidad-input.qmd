@@ -1,0 +1,161 @@
+---
+title: "transmisibilidad-input"
+format: html
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Agregar y visualizar incidencia
+
+Adaptado del tutorial <https://epiverse-trace.github.io/tutorials-early/describe-cases.html>
+
+```{r}
+library(incidence2)
+library(tidyverse)
+
+# agregar lista de casos
+sim_data <- simulist::sim_linelist(
+  outbreak_size = c(1000, 1500)
+) %>% 
+  as_tibble()
+
+sim_data
+
+# Agregar por dias como intervalo temporal
+dialy_incidence <- incidence2::incidence(
+  sim_data,
+  date_index = "date_onset",
+  interval = "day"
+)
+
+# Ver datos tipo incidencia
+dialy_incidence
+
+# Agregar por semana y grupo sexo
+weekly_incidence <- incidence2::incidence(
+  sim_data,
+  date_index = "date_onset",
+  interval = "week",
+  groups = "sex"
+)
+
+weekly_incidence
+plot(weekly_incidence)
+plot(weekly_incidence,fill = "sex")
+
+# Agregar por semana y grupo sexo
+weekly_incidence <- incidence2::incidence(
+  sim_data,
+  date_index = "date_onset",
+  interval = "week", # Aggregate by weekly intervals
+  groups = c("sex", "case_type") # Group by sex and case type
+)
+
+plot(weekly_incidence)
+plot(weekly_incidence,fill = "sex")
+plot(weekly_incidence,fill = "case_type")
+
+# Agregar casos contados por region
+cases_incidence <- 
+  incidence2::covidregionaldataUK %>%
+  as_tibble() %>% 
+  # use {tidyr} to preprocess missing values
+  tidyr::replace_na(base::list(cases_new = 0)) %>%
+  # use {incidence2} to compute the daily incidence
+  incidence2::incidence(
+    date_index = "date",
+    counts = "cases_new",
+    count_values_to = "confirm",
+    date_names_to = "date",
+    complete_dates = TRUE
+  )
+
+cases_incidence %>% 
+  plot()
+
+cases_90d <- cases_incidence %>%
+  dplyr::slice_head(n = 90)
+
+cases_90d %>% 
+  plot()
+
+# Adaptar para {EpiNow2}
+cases_epinow <- cases_90d %>%
+  dplyr::select(-count_variable)
+
+cases_epinow
+```
+
+## Acceder tiempos epidemiologicos
+
+Adaptado de tutorial <https://epiverse-trace.github.io/tutorials-middle/delays-access.html> con traducción al Español en <https://epiverse-trace.github.io/tutorials-middle-es/delays-access.html> (pero con código no actualizado aún)
+
+```{r}
+library(epiparameter)
+library(tidyverse)
+
+# Ingreso manual
+generation_time <-
+  EpiNow2::Gamma(
+  mean = 4,
+  sd = 2,
+  max = 20
+  )
+
+generation_time
+
+# Acceder a numeros de publicaciones
+epiparameter::epiparameter_db(
+  epi_name = "generation"
+)
+
+epiparameter::epiparameter_db(
+  disease = "covid",
+  epi_name = "serial"
+) %>%
+  epiparameter::parameter_tbl()
+
+covid_serialint <-
+  epiparameter::epiparameter_db(
+    disease = "covid",
+    epi_name = "serial",
+    single_epiparameter = TRUE
+  )
+
+plot(covid_serialint)
+
+# Extraer parametros y resumen estadistico
+
+# get the mean
+covid_serialint$summary_stats$mean
+
+generation_time <- 
+  EpiNow2::LogNormal(
+    mean = covid_serialint$summary_stats$mean, # replaced!
+    sd = covid_serialint$summary_stats$sd, # replaced!
+    max = 20
+  )
+
+covid_serialint_parameters <-
+  epiparameter::get_parameters(covid_serialint)
+
+covid_serialint_parameters
+
+generation_time_parms <- 
+  EpiNow2::LogNormal(
+    meanlog = covid_serialint_parameters["meanlog"],
+    sdlog = covid_serialint_parameters["sdlog"],
+    max = 20
+  )
+
+generation_time_parms
+```
+
